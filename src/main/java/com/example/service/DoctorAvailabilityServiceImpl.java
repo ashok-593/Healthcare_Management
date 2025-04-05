@@ -4,11 +4,16 @@ import java.time.LocalDate;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.example.dao.AvailableDoctorDAO;
 import com.example.dao.DoctorAvailabilityDAO;
 import com.example.exception.ResourceNotFoundException;
 import com.example.model.AvailabilitySlot;
@@ -86,12 +91,39 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService{
 		});
 	}
 	
+//	@Override
+//	public List<DoctorAvailability> getAvailability(Long doctorId){
+//		LocalDate today = LocalDate.now();
+//		LocalDate futureDate = today.plusDays(7);
+//		
+//		return doctorAvailabilityRepository.findByDoctorIdAndAvailableDateBetween(doctorId,today,futureDate);
+//		
+//	}
 	@Override
-	public List<DoctorAvailability> getAvailability(Long doctorId){
+	public List<DoctorAvailabilityDAO> getAvailability(Long doctorId) {
+	    LocalDate today = LocalDate.now();
+	    LocalDate futureDate = today.plusDays(7);
+
+	    List<DoctorAvailability> doctorAvailabilities = doctorAvailabilityRepository.findByDoctorIdAndAvailableDateBetween(doctorId,today,futureDate);
+
+        return doctorAvailabilities.stream()
+            .map(availability -> {
+                // Extract only non-blocked start times
+                List<LocalTime> timeSlots = availability.getTimeSlots().stream()
+                    .filter(slot -> !slot.isBlocked())
+                    .map(slot->slot.getTimeSlot())
+                    .collect(Collectors.toList());
+
+                return new DoctorAvailabilityDAO(availability.getDoctorId(), availability.getAvailableDate(), timeSlots);
+            })
+            .collect(Collectors.toList());
+	}
+	
+	public List<DoctorAvailability> getAvailableDoctors(){
 		LocalDate today = LocalDate.now();
 		LocalDate futureDate = today.plusDays(7);
 		
-		return doctorAvailabilityRepository.findByDoctorIdAndAvailableDateBetween(doctorId,today,futureDate);
+		return doctorAvailabilityRepository.findByAvailableDateBetween(today,futureDate);
 		
 	}
 	
@@ -159,6 +191,23 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService{
             })
             .collect(Collectors.toList());
     }
+	
+	
+	public List<AvailableDoctorDAO> getAvailableDoctorList() {
+	    LocalDate today = LocalDate.now();
+	    LocalDate futureDate = today.plusDays(7);
+	    List<DoctorAvailability> doctorAvailabilities = doctorAvailabilityRepository.findByAvailableDateBetween(today, futureDate);
+
+	    Set<Long> uniqueDoctorIds = new HashSet<>();
+	    return doctorAvailabilities.stream()
+	        .filter(availability -> uniqueDoctorIds.add(availability.getDoctorId())) // Add to set and filter duplicates
+	        .map(availability -> {
+	            Optional<User> doctor = userRepository.findById(availability.getDoctorId());
+	            return new AvailableDoctorDAO(availability.getDoctorId(), doctor.get().getName());
+	        })
+	        .collect(Collectors.toList());
+	}
+
 	
 	
 }

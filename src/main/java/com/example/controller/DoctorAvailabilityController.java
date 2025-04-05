@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.dao.AvailableDoctorDAO;
 import com.example.dao.DoctorAvailabilityDAO;
 import com.example.dto.DoctorAvailabilityRequest;
 import com.example.model.DoctorAvailability;
@@ -82,43 +84,19 @@ public class DoctorAvailabilityController {
 		return new ResponseEntity<>(doctorAvailabilityService.getDoctorAvailabilities(doctorId),HttpStatus.OK);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@GetMapping("/doctors")
+	public ResponseEntity<List<AvailableDoctorDAO>> getAvailableDoctors(){
+		
+		return new ResponseEntity<>(doctorAvailabilityService.getAvailableDoctorList(),HttpStatus.OK);
+	}
 	
 	
 	
 	
 	@GetMapping("/{doctorId}")
-	public ResponseEntity<List<DoctorAvailability>>getAvailability(@PathVariable Long doctorId){
+	public ResponseEntity<List<DoctorAvailabilityDAO>>getAvailability(@PathVariable Long doctorId){
 		
-		return new ResponseEntity<>(doctorAvailabilityService.getDoctorAvailability(doctorId),HttpStatus.OK);
+		return new ResponseEntity<>(doctorAvailabilityService.getAvailability(doctorId),HttpStatus.OK);
 		
 	}
 	

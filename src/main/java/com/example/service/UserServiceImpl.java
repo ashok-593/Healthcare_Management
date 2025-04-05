@@ -4,10 +4,12 @@ package com.example.service;
 import com.example.dto.LoginRequest;
 
 
+
 import com.example.dto.RegisterRequest;
 import com.example.dto.UserUpdateRequest;
 import com.example.exception.HealthCareAPIException;
 import com.example.exception.ResourceNotFoundException;
+import com.example.model.Role;
 import com.example.model.User;
 import com.example.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.security.JwtUtil;
 import com.example.service.serviceInterfaces.UserService;
+import com.example.dto.AuthResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
     //Authenticate User Login
     @Override
     @Transactional
-    public String loginUser(LoginRequest request) {
+    public AuthResponse loginUser(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new HealthCareAPIException(HttpStatus.NOT_FOUND,"User not found with the given email : "+request.getEmail()));
         
         if(!passwordEncoder.matches(request.getPassword(),user.getPassword())) {
@@ -78,7 +81,8 @@ public class UserServiceImpl implements UserService {
         
         String token = jwtUtil.generateToken(authentication);
         
-        return token;
+        
+        return new AuthResponse(token,user);
     }
     
     @Override

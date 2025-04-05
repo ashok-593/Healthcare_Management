@@ -40,11 +40,10 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
         
-        String token = userService.loginUser(request);
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setAccessToken(token);
+        AuthResponse response = userService.loginUser(request);
+       
 
-        return new ResponseEntity<>(authResponse,HttpStatus.OK);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
     
     @PutMapping("/update/{id}")

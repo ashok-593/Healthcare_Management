@@ -22,6 +22,7 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
 	List<DoctorAvailability>findByDoctorIdAndAvailableDateBetween(Long doctorId,LocalDate startDate, LocalDate end);
 	void deleteByAvailableDateBefore(LocalDate availabledate);
 	DoctorAvailability findByDoctorIdAndAvailableDate(Long doctorId, LocalDate availableDate);
+	List<DoctorAvailability> findByAvailableDateBetween(LocalDate today, LocalDate futureDate);
 	
 	
 	

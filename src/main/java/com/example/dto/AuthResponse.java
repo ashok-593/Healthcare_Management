@@ -1,8 +1,12 @@
 package com.example.dto;
 
+
+import com.example.model.User;
+
 public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
+    private User user;
 	public String getAccessToken() {
 		return accessToken;
 	}
@@ -15,14 +19,24 @@ public class AuthResponse {
 	public void setTokenType(String tokenType) {
 		this.tokenType = tokenType;
 	}
-	public AuthResponse(String accessToken, String tokenType) {
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public AuthResponse(String accessToken, User user) {
 		super();
 		this.accessToken = accessToken;
-		this.tokenType = tokenType;
+		this.user = user;
 	}
 	public AuthResponse() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
+    
+    
+    
     
     
 	
