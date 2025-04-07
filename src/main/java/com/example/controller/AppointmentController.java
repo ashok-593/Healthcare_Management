@@ -39,10 +39,10 @@ public class AppointmentController {
 		
 	}
 	
-	@PutMapping("/update/{id}")
+	@PutMapping("/update")
 	@PreAuthorize("hasRole('PATIENT')")
-	public ResponseEntity<String> updateAppointment( @Valid @PathVariable Long id, @Valid @RequestBody AppointmentUpdateRequest request){
-		return new ResponseEntity<>(appointmentService.updateAppointment(id,request.getAppointmentDate(), request.getTimeSlot()),HttpStatus.OK);
+	public ResponseEntity<String> updateAppointment( @Valid @RequestBody AppointmentUpdateRequest request){
+		return new ResponseEntity<>(appointmentService.updateAppointment(request.getAppointmentId(),request.getAppointmentDate(), request.getTimeSlot()),HttpStatus.OK);
 	}
 	
 	@DeleteMapping("cancel/{id}")

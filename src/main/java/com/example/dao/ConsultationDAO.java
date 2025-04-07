@@ -7,7 +7,7 @@ public class ConsultationDAO {
 	private Long consultationId;
 	private Long appointmentId;
 	private Long patientId;
-	private String PatientName;
+	private String patientName;
 	private Long doctorId;
 	private String doctorName;
 	private LocalDate appointmentDate;
@@ -33,10 +33,10 @@ public class ConsultationDAO {
 		this.patientId = patientId;
 	}
 	public String getPatientName() {
-		return PatientName;
+		return patientName;
 	}
 	public void setPatientName(String patientName) {
-		PatientName = patientName;
+		this.patientName = patientName;
 	}
 	public Long getDoctorId() {
 		return doctorId;

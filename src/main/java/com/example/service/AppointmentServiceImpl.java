@@ -184,8 +184,13 @@ public class AppointmentServiceImpl implements AppointmentService{
 		     LocalTime time = LocalTime.now();
 		     
 		     List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(patientId);
-		     
-		     List<Appointment> upcomingAppointments = allAppointments.stream()
+		     List<Appointment> reqAppointments = allAppointments.stream()
+		    		    .filter(appointment -> 
+		    		        appointment.getStatus() != AppointmentStatus.CANCELLED && 
+		    		        appointment.getStatus() != AppointmentStatus.COMPLETED)
+		    		    .collect(Collectors.toList());
+
+		     List<Appointment> upcomingAppointments = reqAppointments.stream()
 		         .filter(appointment -> 
 		             appointment.getAppointmentDate().isAfter(today) ||
 		             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isAfter(time))

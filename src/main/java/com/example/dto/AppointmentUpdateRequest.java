@@ -9,10 +9,10 @@ import jakarta.validation.constraints.Future;
 
 public class AppointmentUpdateRequest {
 	
-	
+	private Long appointmentId;
 	private Long doctorId;
 	
-	@Future(message="Time slot must be in the future")
+	
 	private LocalDate appointmentDate;
 	
 	private LocalTime timeSlot;
@@ -34,6 +34,14 @@ public class AppointmentUpdateRequest {
 	public void setTimeSlot(LocalTime timeSlot) {
 		this.timeSlot = timeSlot;
 	}
+	public Long getAppointmentId() {
+		return appointmentId;
+	}
+	public void setAppointmentId(Long appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+	
+	
 	
 	
 
