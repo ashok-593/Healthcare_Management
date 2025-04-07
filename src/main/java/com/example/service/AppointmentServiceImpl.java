@@ -44,16 +44,6 @@ public class AppointmentServiceImpl implements AppointmentService{
 	private DoctorAvailabilityRepository availabilityRepository;
 	
 	
-	/*
-	 * @Autowired public AppointmentServiceImpl(AppointmentRepository
-	 * appointmentRepository, NotificationServiceImpl notificationService,
-	 * AvailabilitySlotRepository slotRepository,UserRepository userRepository,
-	 * DoctorAvailabilityRepository availabilityRepository) {
-	 * this.appointmentRepository = appointmentRepository;
-	 * this.userRepository=userRepository; this.notificationService =
-	 * notificationService; this.slotRepository = slotRepository;
-	 * this.availabilityRepository = availabilityRepository; }
-	 */
 	//@Autowired
 	//private EmailService emailService;
 	
@@ -186,6 +176,47 @@ public class AppointmentServiceImpl implements AppointmentService{
 		 
 		 
 	 }
+	
+	public List<AppointmentDAO> getUpcomingPatientAppointments(Long patientId){
+		
+	
+		     LocalDate today = LocalDate.now();
+		     LocalTime time = LocalTime.now();
+		     
+		     List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(patientId);
+		     
+		     List<Appointment> upcomingAppointments = allAppointments.stream()
+		         .filter(appointment -> 
+		             appointment.getAppointmentDate().isAfter(today) ||
+		             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isAfter(time))
+		         )
+		         .collect(Collectors.toList());
+		     
+		     return getAppointmentDAOList(upcomingAppointments);
+		 
+		 
+		
+	}
+	
+	
+	
+public List<AppointmentDAO> getPastPatientAppointments(Long patientId){
+		
+	 LocalDate today = LocalDate.now();
+     LocalTime time = LocalTime.now();
+     
+     List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(patientId);
+     
+     List<Appointment> pastAppointments = allAppointments.stream()
+         .filter(appointment -> 
+             appointment.getAppointmentDate().isBefore(today) ||
+             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isBefore(time))
+         )
+         .collect(Collectors.toList());
+     
+     return getAppointmentDAOList(pastAppointments);
+		
+	}
 	
 	@Override
 	 public List<AppointmentDAO> getAppointmentsByDoctor(Long doctorId){

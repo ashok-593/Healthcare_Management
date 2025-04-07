@@ -2,10 +2,9 @@ package com.example.repository;
 
 import com.example.model.Appointment;
 
-
-
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +21,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 	boolean existsByPatientUserId(Long patientId);
 	boolean existsByDoctorUserId(Long doctorId);
 	Optional<Appointment> findByAppointmentId(Long appointmentId);
+	
+
 	
 }

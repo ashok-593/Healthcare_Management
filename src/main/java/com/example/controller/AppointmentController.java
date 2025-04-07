@@ -60,6 +60,27 @@ public class AppointmentController {
 		return new ResponseEntity<>(appointmentService.getAppointmentsByPatient(patientId),HttpStatus.OK);
 		
 	}
+	
+	
+	@GetMapping("/patient/{patientId}/upcoming")
+	@PreAuthorize("hasRole('PATIENT')")
+	public ResponseEntity<List<AppointmentDAO>> getUpcomingPatientAppointments(@PathVariable Long patientId){
+		
+		return new ResponseEntity<>(appointmentService.getUpcomingPatientAppointments(patientId),HttpStatus.OK);
+		
+	}
+	
+	
+	@GetMapping("/patient/{patientId}/past")
+	@PreAuthorize("hasRole('PATIENT')")
+	public ResponseEntity<List<AppointmentDAO>> getPastPatientAppointments(@PathVariable Long patientId){
+		
+		return new ResponseEntity<>(appointmentService.getPastPatientAppointments(patientId),HttpStatus.OK);
+		
+	}
+	
+	
+	
 	@GetMapping("/doctor/{doctorId}")
 	@PreAuthorize("hasRole('DOCTOR')")
 	public ResponseEntity<List<AppointmentDAO>> getAppointmentsByDoctor(@PathVariable Long doctorId){
