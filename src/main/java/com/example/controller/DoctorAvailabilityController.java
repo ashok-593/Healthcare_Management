@@ -41,7 +41,7 @@ public class DoctorAvailabilityController {
 	
 	
 	@PostMapping("/set/{doctorId}")
-	@PreAuthorize("hasRole('DOCTOR')")
+	//@PreAuthorize("hasRole('DOCTOR')")
 	public ResponseEntity<String> setDoctorAvailability(@PathVariable("doctorId") Long id){
 		
 		doctorAvailabilityService.setDoctorAvailability(id);
@@ -50,23 +50,26 @@ public class DoctorAvailabilityController {
 		
 	}
 	
-	@DeleteMapping("/block")
+	@DeleteMapping("/block/{doctorId}/{date}")
 	@PreAuthorize("hasRole('DOCTOR')")
-	public ResponseEntity<String> blockAvailability( @Valid @RequestBody DoctorAvailabilityRequest request ){
-	
-		doctorAvailabilityService.blockAvailability(request.getDoctorId(), request.getAvailableDate());
+	public ResponseEntity<String> blockAvailability( @Valid @PathVariable() Long doctorId , @PathVariable() String date ){
 		
-		return new ResponseEntity<>("Successfully blocked the date "+request.getAvailableDate()+".",HttpStatus.OK);
+		LocalDate blockDay = LocalDate.parse(date);
+	
+		doctorAvailabilityService.blockAvailability(doctorId, blockDay);
+		
+		return new ResponseEntity<>("Successfully blocked the date "+date+".",HttpStatus.OK);
 		
 	}
 	
-	@PutMapping("/unblock")
+	@PutMapping("/unblock/{doctorId}/{date}")
 	@PreAuthorize("hasRole('DOCTOR')")
-	public ResponseEntity<String> unblockAvailability( @Valid @RequestBody DoctorAvailabilityRequest request){
+	public ResponseEntity<String> unblockAvailability( @Valid @PathVariable() Long doctorId, @PathVariable String date){
+		LocalDate unblockDay = LocalDate.parse(date);
 		
-		doctorAvailabilityService.unblockAvailability(request.getDoctorId(), request.getAvailableDate());
+		doctorAvailabilityService.unblockAvailability(doctorId,unblockDay);
 		
-		return new ResponseEntity<>("Successfully unBlocked the date :"+request.getAvailableDate()+".",HttpStatus.OK);
+		return new ResponseEntity<>("Successfully unBlocked the date :"+unblockDay+".",HttpStatus.OK);
 	}
 	
 	@GetMapping("/{doctorId}/{date}")
@@ -97,6 +100,13 @@ public class DoctorAvailabilityController {
 	public ResponseEntity<List<DoctorAvailabilityDAO>>getAvailability(@PathVariable Long doctorId){
 		
 		return new ResponseEntity<>(doctorAvailabilityService.getAvailability(doctorId),HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/blocked/{doctorId}")
+	public ResponseEntity<List<DoctorAvailabilityDAO>>getBlockedAvailabilities(@PathVariable Long doctorId){
+		
+		return new ResponseEntity<>(doctorAvailabilityService.getBlockedAvailability(doctorId),HttpStatus.OK);
 		
 	}
 	

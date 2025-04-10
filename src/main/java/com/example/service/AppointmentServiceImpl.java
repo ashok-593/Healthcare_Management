@@ -1,6 +1,7 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.example.dao.AppointmentDAO;
@@ -11,6 +12,7 @@ import com.example.model.Appointment;
 import com.example.model.AppointmentStatus;
 import com.example.model.AvailabilitySlot;
 import com.example.model.DoctorAvailability;
+import com.example.model.Role;
 import com.example.model.User;
 import com.example.repository.AppointmentRepository;
 import com.example.repository.AvailabilitySlotRepository;
@@ -177,14 +179,35 @@ public class AppointmentServiceImpl implements AppointmentService{
 		 
 	 }
 	
-	public List<AppointmentDAO> getUpcomingPatientAppointments(Long patientId){
+	public List<AppointmentDAO> getUpcomingAppointments(Long userId){
 		
 	
 		     LocalDate today = LocalDate.now();
 		     LocalTime time = LocalTime.now();
 		     
-		     List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(patientId);
-		     List<Appointment> reqAppointments = allAppointments.stream()
+		     User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Patient","id",userId));
+		    if(user.getRole() == Role.PATIENT) {
+		    	 List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(userId);
+		    	 
+		    	 List<Appointment> reqAppointments = allAppointments.stream()
+			    		    .filter(appointment -> 
+			    		        appointment.getStatus() != AppointmentStatus.CANCELLED && 
+			    		        appointment.getStatus() != AppointmentStatus.COMPLETED)
+			    		    .collect(Collectors.toList());
+
+			     List<Appointment> upcomingAppointments = reqAppointments.stream()
+			         .filter(appointment -> 
+			             appointment.getAppointmentDate().isAfter(today) ||
+			             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isAfter(time))
+			         )
+			         .collect(Collectors.toList());
+			     
+			     return getAppointmentDAOList(upcomingAppointments);
+		    	  }
+		    
+		    	List<Appointment> allAppointments = appointmentRepository.findByDoctorUserId(userId);
+		    	
+		    	List<Appointment> reqAppointments = allAppointments.stream()
 		    		    .filter(appointment -> 
 		    		        appointment.getStatus() != AppointmentStatus.CANCELLED && 
 		    		        appointment.getStatus() != AppointmentStatus.COMPLETED)
@@ -198,28 +221,89 @@ public class AppointmentServiceImpl implements AppointmentService{
 		         .collect(Collectors.toList());
 		     
 		     return getAppointmentDAOList(upcomingAppointments);
+		    
+		     
+		     
 		 
 		 
 		
 	}
 	
+	public List<AppointmentDAO> getTodaysAppointments(Long doctorId){
+		
+		
+	     LocalDate today = LocalDate.now();
+	     LocalTime time = LocalTime.now();
+	     
+	     
+	     
+	     List<Appointment> allAppointments = appointmentRepository.findByDoctorUserId(doctorId);
+	     List<Appointment> reqAppointments = allAppointments.stream()
+	    		    .filter(appointment -> 
+	    		        appointment.getStatus() != AppointmentStatus.CANCELLED && 
+	    		        appointment.getStatus() != AppointmentStatus.COMPLETED)
+	    		    .collect(Collectors.toList());
+
+	     List<Appointment> todaysAppointments = reqAppointments.stream()
+	         .filter(appointment -> 
+	             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isAfter(time))
+	         )
+	         .collect(Collectors.toList());
+	     
+	     return getAppointmentDAOList(todaysAppointments);
+	 
+	 
+	
+}
 	
 	
-public List<AppointmentDAO> getPastPatientAppointments(Long patientId){
+	
+public List<AppointmentDAO> getPastAppointments(Long userId){
 		
 	 LocalDate today = LocalDate.now();
      LocalTime time = LocalTime.now();
      
-     List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(patientId);
+     User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user","id",userId));
      
-     List<Appointment> pastAppointments = allAppointments.stream()
-         .filter(appointment -> 
-             appointment.getAppointmentDate().isBefore(today) ||
-             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isBefore(time))
-         )
-         .collect(Collectors.toList());
+     if(user.getRole() == Role.PATIENT) {
+    	 List<Appointment> allAppointments = appointmentRepository.findByPatientUserId(userId);
+    	 
+    	 List<Appointment> reqAppointments = allAppointments.stream()
+	    		    .filter(appointment -> 
+	    		        appointment.getStatus() != AppointmentStatus.CANCELLED )
+	    		    .collect(Collectors.toList());
+    	 
+    	 List<Appointment> pastAppointments = reqAppointments.stream()
+    	         .filter(appointment -> 
+    	             appointment.getAppointmentDate().isBefore(today) ||
+    	             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isBefore(time))
+    	         )
+    	         .collect(Collectors.toList());
+    	     
+    	     return getAppointmentDAOList(pastAppointments);
+    	 
+     }
      
-     return getAppointmentDAOList(pastAppointments);
+     List<Appointment> allAppointments = appointmentRepository.findByDoctorUserId(userId);
+     
+     List<Appointment> reqAppointments = allAppointments.stream()
+ 		    .filter(appointment -> 
+ 		        appointment.getStatus() != AppointmentStatus.CANCELLED )
+ 		    .collect(Collectors.toList());
+	 
+	 List<Appointment> pastAppointments = reqAppointments.stream()
+	         .filter(appointment -> 
+	             appointment.getAppointmentDate().isBefore(today) ||
+	             (appointment.getAppointmentDate().isEqual(today) && appointment.getTimeSlot().isBefore(time))
+	         )
+	         .collect(Collectors.toList());
+	     
+	     return getAppointmentDAOList(pastAppointments);
+     
+     
+     
+     
+     
 		
 	}
 	

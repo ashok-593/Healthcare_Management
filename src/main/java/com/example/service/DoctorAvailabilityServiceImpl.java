@@ -105,8 +105,8 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService{
 	    LocalDate futureDate = today.plusDays(7);
 
 	    List<DoctorAvailability> doctorAvailabilities = doctorAvailabilityRepository.findByDoctorIdAndAvailableDateBetween(doctorId,today,futureDate);
-
-        return doctorAvailabilities.stream()
+	    List<DoctorAvailability> unBlockedAvailabilities = doctorAvailabilities.stream().filter(availability -> (availability.isBlocked() == false)).collect(Collectors.toList());
+        return unBlockedAvailabilities.stream()
             .map(availability -> {
                 // Extract only non-blocked start times
                 List<LocalTime> timeSlots = availability.getTimeSlots().stream()
@@ -118,6 +118,26 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService{
             })
             .collect(Collectors.toList());
 	}
+	
+	public List<DoctorAvailabilityDAO> getBlockedAvailability(Long doctorId) {
+	    LocalDate today = LocalDate.now();
+	    LocalDate futureDate = today.plusDays(7);
+
+	    List<DoctorAvailability> doctorAvailabilities = doctorAvailabilityRepository.findByDoctorIdAndAvailableDateBetween(doctorId,today,futureDate);
+	    List<DoctorAvailability> blockedAvailabilities = doctorAvailabilities.stream().filter(availability -> (availability.isBlocked() == true)).collect(Collectors.toList());
+        return blockedAvailabilities.stream()
+            .map(availability -> {
+                // Extract only blocked start times
+                List<LocalTime> timeSlots = availability.getTimeSlots().stream()
+                    .filter(slot -> !slot.isBlocked())
+                    .map(slot->slot.getTimeSlot())
+                    .collect(Collectors.toList());
+
+                return new DoctorAvailabilityDAO(availability.getDoctorId(), availability.getAvailableDate(), timeSlots);
+            })
+            .collect(Collectors.toList());
+	}
+	
 	
 	public List<DoctorAvailability> getAvailableDoctors(){
 		LocalDate today = LocalDate.now();

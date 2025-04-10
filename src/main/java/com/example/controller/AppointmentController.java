@@ -62,20 +62,25 @@ public class AppointmentController {
 	}
 	
 	
-	@GetMapping("/patient/{patientId}/upcoming")
-	@PreAuthorize("hasRole('PATIENT')")
-	public ResponseEntity<List<AppointmentDAO>> getUpcomingPatientAppointments(@PathVariable Long patientId){
+	@GetMapping("/{userId}/upcoming")
+	public ResponseEntity<List<AppointmentDAO>> getUpcomingAppointments(@PathVariable Long userId){
 		
-		return new ResponseEntity<>(appointmentService.getUpcomingPatientAppointments(patientId),HttpStatus.OK);
+		return new ResponseEntity<>(appointmentService.getUpcomingAppointments(userId),HttpStatus.OK);
 		
 	}
 	
 	
-	@GetMapping("/patient/{patientId}/past")
-	@PreAuthorize("hasRole('PATIENT')")
-	public ResponseEntity<List<AppointmentDAO>> getPastPatientAppointments(@PathVariable Long patientId){
+	@GetMapping("/{userId}/past")
+	public ResponseEntity<List<AppointmentDAO>> getPastAppointments(@PathVariable Long userId){
 		
-		return new ResponseEntity<>(appointmentService.getPastPatientAppointments(patientId),HttpStatus.OK);
+		return new ResponseEntity<>(appointmentService.getPastAppointments(userId),HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/{userId}/today")
+	public ResponseEntity<List<AppointmentDAO>> getTodaysAppointments(@PathVariable Long userId){
+		
+		return new ResponseEntity<>(appointmentService.getTodaysAppointments(userId),HttpStatus.OK);
 		
 	}
 	

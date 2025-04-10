@@ -47,5 +47,11 @@ public class ConsultationController {
     	
     	return new ResponseEntity<>(consultationService.viewMedicalHistory(patientId),HttpStatus.OK);
     }
+    
+    @GetMapping("/doctor/history/{doctorId}")
+    public ResponseEntity<List<ConsultationDAO>> viewDoctorConsultations(@PathVariable Long doctorId){
+    	
+    	return new ResponseEntity<>(consultationService.viewDoctorConsultations(doctorId),HttpStatus.OK);
+    }
 }
  

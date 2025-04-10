@@ -23,7 +23,6 @@ public class AppointmentRequest {
 	private Long doctorId;
 	
 	@NotNull(message = " appointmentDate is Mandatory to book an appointment")
-	@Future(message="Time slot must be in the future")
 	private LocalDate appointmentDate;
 	
 	@NotNull(message = " appointment timeSlot is Madatory to book an appointment")

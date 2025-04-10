@@ -89,6 +89,21 @@ public class ConsultationServiceImpl implements ConsultationService {
     	 return  getConsultationDaoList(consultations);
     }
     
+    public List<ConsultationDAO> viewDoctorConsultations(Long doctorId) {
+    	
+    	
+		User user = userRepository.findById(doctorId).orElseThrow(()-> new ResourceNotFoundException("Doctor","id",doctorId));
+    	//Appointment appointment = appointmentRepository.findByAppointmentPatientId(patientId).orElseThrow(()-> new ResourceNotFoundException("Patient","id",patientId));
+    	boolean isAvailable = appointmentRepository.existsByDoctorUserId(doctorId);
+    	if(!isAvailable) {
+    		throw new ResourceNotFoundException("Appointment","Doctor id",doctorId);
+    	}
+    	
+    	List<Consultation> consultations = consultationRepository.findByAppointmentDoctorUserId(doctorId);
+    	 
+    	 return  getConsultationDaoList(consultations);
+    }
+    
     public List<ConsultationDAO> getConsultationDaoList(List<Consultation> consultations){
     	
     	return consultations.stream()
